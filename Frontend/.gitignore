@@ -1,1 +1,21 @@
 node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies geradas pelo Vite/React
+dist/
+.vite/
+.vite/deps_temp_*/
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Ambiente
+.env
+.env.*
