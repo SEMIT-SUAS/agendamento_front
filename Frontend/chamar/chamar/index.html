@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Última Chamada</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  body {
+    background: #0c1b2a;
+    color: #fff;
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .painel {
+    background: #13293d;
+    padding: 40px 60px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 0 30px #000;
+    min-width: 500px;
+  }
+
+  .senha {
+    font-size: 90px;
+    font-weight: bold;
+    color: #00f5d4;
+  }
+
+  .nome {
+    font-size: 30px;
+    margin-top: 10px;
+  }
+
+  .servico {
+    margin-top: 8px;
+    font-size: 22px;
+    opacity: .9;
+  }
+
+  .tipo {
+    margin-top: 8px;
+    font-size: 18px;
+    color: #ffd166;
+  }
+
+  .hora {
+    margin-top: 15px;
+    font-size: 14px;
+    opacity: .7;
+  }
+</style>
+</head>
+<body>
+
+<div class="painel">
+  <div class="senha" id="senha">---</div>
+  <div class="nome" id="usuario">Carregando...</div>
+  <div class="servico" id="servico"></div>
+  <div class="tipo" id="tipo"></div>
+  <div class="hora" id="hora"></div>
+</div>
+
+<script>
+const API = "http://192.168.200.34:8080/agendamentos/ultima-chamada";
+
+async function carregarUltimaChamada() {
+  try {
+    const response = await fetch(API);
+
+    if (response.status === 204) {
+      document.getElementById("usuario").innerText = "Nenhuma chamada ainda";
+      return;
+    }
+
+    const data = await response.json();
+
+    document.getElementById("senha").innerText = data.senha;
+    document.getElementById("usuario").innerText = data.usuarioNome || "-";
+    document.getElementById("servico").innerText = "Serviço: " + (data.servicoNome || "-");
+    document.getElementById("tipo").innerText = "Tipo: " + (data.usuarioTipo || data.tipoAtendimento || "-");
+
+    if(data.horaChamada){
+      const dataFormatada = new Date(data.horaChamada).toLocaleString("pt-BR");
+      document.getElementById("hora").innerText = "Chamado em: " + dataFormatada;
+    }
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("usuario").innerText = "Erro ao conectar";
+  }
+}
+
+// Atualiza a cada 3 segundos
+setInterval(carregarUltimaChamada, 3000);
+
+// Primeira chamada
+carregarUltimaChamada();
+</script>
+
+</body>
+</html>

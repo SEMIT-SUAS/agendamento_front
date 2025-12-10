@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Agendamentos - São Luís</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>📋 Painel de Agendamentos</h1>
+  <p>Centro Avançado de Apoio</p>
+</header>
+
+<div class="container">
+
+  <div class="top-actions">
+    <input type="text" id="searchInput" placeholder="🔎 Buscar por nome, senha ou serviço...">
+    <button onclick="carregarAgendamentos()">🔄 Atualizar</button>
+
+    <!-- Botões de CHAMAR -->
+    <div id="grupo-chamar">
+      <button onclick="chamarNormal()">📢 Chamar Normal</button>
+      <button onclick="chamarPrioridade()">⚡ Chamar Prioridade</button>
+    </div>
+
+    <!-- Botões de ATENDIMENTO -->
+    <div id="grupo-atendimento" style="display: none;">
+      <button class="finalizar" onclick="finalizarAtendimento()">✅ Finalizar</button>
+      <button class="cancelar" onclick="cancelarAtendimento()">❌ Cancelar</button>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Senha</th>
+        <th>Usuário</th>
+        <th>Serviço</th>
+        <th>Situação</th>
+        <th>Tipo</th>
+        <th>Data/Hora</th>
+      </tr>
+    </thead>
+    <tbody id="tabela-agendamentos">
+    </tbody>
+  </table>
+
+  <!-- Modal principal (Detalhes / Cancelar) -->
+<div id="modalAtendimento" class="modal">
+  <div class="modal-content">
+    <h2>Agendamento Selecionado</h2>
+    <p id="modalInfo"></p>
+    <div class="modal-buttons">
+      <button onclick="verDetalhes()">📋 Detalhes</button>
+      <button onclick="cancelarAgendamento()">❌ Não Compareceu</button>
+      <button onclick="fecharModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal detalhes do cidadão -->
+<div id="modalDetalhes" class="modal">
+  <div class="modal-content">
+    <h2>Detalhes do Cidadão</h2>
+    <div id="detalhesContent"></div>
+    <div class="modal-buttons">
+      <button onclick="fecharModalDetalhes()">✖ Fechar</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

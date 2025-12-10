@@ -1,0 +1,199 @@
+* {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f1f5f9;
+}
+
+header {
+  background: #004aad;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.container {
+  padding: 20px 8%;
+}
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.top-actions button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #1c5d99;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.top-actions button:hover {
+  background: #14456f;
+}
+
+.top-actions input {
+  width: 70%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+th {
+  background: #1e40af;
+  color: white;
+  padding: 12px;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+tr:hover {
+  background: #e0f2fe;
+}
+
+.status-AGENDADO {
+  color: #0284c7;
+  font-weight: bold;
+}
+
+.status-EM_ATENDIMENTO {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.status-REAGENDADO {
+  color: #a16207;
+  font-weight: bold;
+}
+
+.status-CANCELADO {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+button.finalizar {
+  background: #2e7d32;
+}
+
+button.finalizar:hover {
+  background: #1b5e20;
+}
+
+button.cancelar {
+  background: #c62828;
+}
+
+button.cancelar:hover {
+  background: #8e0000;
+}
+
+#grupo-chamar, #grupo-atendimento {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Estilo para os modais */
+.modal {
+  display: none; /* inicialmente escondido */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5); /* fundo semi-transparente */
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-buttons button:hover {
+  opacity: 0.9;
+}
+
+.modal-buttons button:first-child {
+  background-color: #1e40af;
+  color: white;
+}
+
+.modal-buttons button:nth-child(2) {
+  background-color: #dc2626;
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background-color: #888;
+  color: white;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 300px;
+}
