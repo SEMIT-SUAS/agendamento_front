@@ -1,5 +1,6 @@
 export interface Agendamento {
   agendamentoId: number
+  secretariaId?: number
   senha: string
   usuarioNome: string
   usuarioTipo?: string

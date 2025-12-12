@@ -26,7 +26,8 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
     const loadData = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`${BASE_URL}/listar-todos`)
+        const response = await fetch(`${BASE_URL}/secretaria/30`)
+        console.log('Retorno de SecretariaID:', response);
         const data = await response.json()
         const lista = Array.isArray(data) ? data : data.content || data.data || []
         setAgendamentos(lista)
@@ -42,11 +43,17 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
         setIsLoading(false)
       }
     }
-
     loadData()
-    const interval = setInterval(loadData, 10000)
-    return () => clearInterval(interval)
+    
+    // const interval = setInterval(loadData, 10000)
+    // return () => clearInterval(interval)
   }, [])
+
+  const handleRowClick = (agendamento: Agendamento) => {
+    // Esta função será chamada apenas para seleção de linha,
+    // o botão já lidou com sua própria lógica e stopPropagation
+    setSelectedAgendamento(agendamento);
+  };
 
   const handleCall = async (tipo: "normal" | "prioridade") => {
     try {
@@ -121,12 +128,21 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
     }
   }
 
-  const filteredAgendamentos = agendamentos.filter(
-    (agendamento) =>
-      agendamento.usuarioNome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agendamento.senha?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agendamento.servicoNome?.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  
+
+  const termo = searchTerm.trim().toLowerCase();
+
+const filteredAgendamentos =
+  termo === ""
+    ? agendamentos
+    : agendamentos.filter((agendamento) =>
+        agendamento.usuarioNome?.toLowerCase().includes(termo) ||
+        agendamento.senha?.toLowerCase().includes(termo) ||
+        agendamento.servicoNome?.toLowerCase().includes(termo)
+      );
+
+
+  // console.log('Total de agendamentos antes do filtro:', filteredAgendamentos.length)
 
   return (
     <div className="scheduling-dashboard">
@@ -150,7 +166,8 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
         </div>
 
         <SchedulingTable
-          agendamentos={filteredAgendamentos}
+          setAgendamentos={setAgendamentos}
+          agendamentos={agendamentos}
           selectedAgendamento={selectedAgendamento}
           onSelectAgendamento={setSelectedAgendamento}
           isLoading={isLoading}
@@ -158,11 +175,9 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
       </main>
 
       {selectedAgendamento && (
-        <SchedulingModal
-          agendamento={selectedAgendamento}
-          onClose={() => setSelectedAgendamento(null)}
-          onShowDetails={handleShowDetails}
-          onCancel={handleCancelAppointment}
+        <DetailsModal
+        agendamento={selectedAgendamento}
+        onClose={() => setSelectedAgendamento(null)}
         />
       )}
 
