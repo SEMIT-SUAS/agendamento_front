@@ -2,7 +2,6 @@
 
 import type { Agendamento } from "../types/agendamento"
 import { formatDate, formatSituation } from "../utils/formatters"
-import "../styles/scheduling-table.css"
 import { Dispatch, SetStateAction, useState } from "react"
 
 const BASE_URL = "http://192.168.200.34:8080/agendamentos"
@@ -23,7 +22,7 @@ export default function SchedulingTable({
   isLoading,
 }: SchedulingTableProps) {
   if (isLoading) {
-    return <div className="table-loading">Carregando agendamentos...</div>
+    return <div className="p-8 text-center text-gray-500 text-sm">Carregando agendamentos...</div>
   }
 
   const [agendamento, setAgendamento] =  useState<Agendamento | null>(null);
@@ -61,70 +60,77 @@ export default function SchedulingTable({
   }
 
   return (
-    <div className="table-container">
-      <table className="scheduling-table">
+    <div className="bg-white rounded-lg overflow-y-auto overflow-x-hidden shadow-sm border border-gray-200">
+      <table className="w-full border-collapse text-sm">
         <thead>
-          <tr>
-            <th>Senha</th>
-            <th>Usuário</th>
-            <th>Serviço</th>
-            <th>Situação</th>
-            <th>Tipo</th>
-            <th>Data/Hora</th>
-            <th>Ações</th>
+          <tr className="bg-blue-600 text-white">
+            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Senha</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Usuário</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Serviço</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Situação</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Tipo</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Data/Hora</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Ações</th>
           </tr>
         </thead>
         <tbody>
           {agendamentos.length === 0 ? (
             <tr>
-              <td colSpan={7} className="empty-state">
+              <td colSpan={7} className="text-center p-8 text-gray-400 italic">
                 Nenhum agendamento encontrado
               </td>
             </tr>
           ) : (
             agendamentos.map((agendamento) => (
-              // console.log('Agendamento:', agendamentos),
               <tr
                 key={agendamento.agendamentoId}
                 className={`
-                  scheduling-row
-                  ${selectedAgendamento?.agendamentoId === agendamento.agendamentoId ? "selected" : ""}
-                  status-${agendamento.situacao}
+                  transition-all duration-200 cursor-pointer hover:bg-gray-50
+                  ${selectedAgendamento?.agendamentoId === agendamento.agendamentoId 
+                    ? "bg-blue-50 border-l-4 border-l-blue-600 pl-2" 
+                    : ""}
                 `}
                 onClick={(e) => {
-                  // Verifica se o alvo do clique (event.target) é o botão, ou um descendente dele
                   const clickedElement = e.target as HTMLElement;
                   
-                  // Usa .closest() para verificar se o elemento clicado ou qualquer pai dele é o botão
                   if (clickedElement.closest('.chamar-button')) {
-                    // Se clicou no botão, não faça nada aqui, pois o handler do botão já foi executado.
                     return; 
                   }
 
-                  // Caso contrário, selecione a linha normalmente
                   onSelectAgendamento(agendamento);
                 }}
               >
-                <td className="senha-cell">
+                <td className="p-3.5 border-b border-gray-200 text-center font-semibold text-blue-600">
                   <strong>{agendamento.senha}</strong>
                 </td>
-                <td>{agendamento.usuarioNome}</td>
-                <td>{agendamento.servicoNome}</td>
-                <td>
-                  <span className={`status-badge status-${agendamento.situacao}`}>
+                <td className="p-3.5 border-b border-gray-200 text-center text-gray-800">{agendamento.usuarioNome}</td>
+                <td className="p-3.5 border-b border-gray-200 text-center text-gray-800">{agendamento.servicoNome}</td>
+                <td className="p-3.5 border-b border-gray-200 text-center">
+                  <span className={`
+                    px-3 py-1 rounded text-xs font-medium inline-block
+                    ${agendamento.situacao === 'AGENDADO' 
+                      ? 'bg-blue-50 text-blue-600' 
+                      : agendamento.situacao === 'EM_ATENDIMENTO'
+                      ? 'bg-green-50 text-green-600'
+                      : agendamento.situacao === 'REAGENDADO'
+                      ? 'bg-yellow-50 text-yellow-600'
+                      : agendamento.situacao === 'CANCELADO'
+                      ? 'bg-red-50 text-red-600'
+                      : 'bg-gray-50 text-gray-500'
+                    }
+                  `}>
                     {formatSituation(agendamento.situacao)}
                   </span>
                 </td>
-                <td>{agendamento.tipoAtendimento}</td>
-                <td>{formatDate(agendamento.horaAgendamento)}</td>
-                <td>
-                  {
-                   <button 
-                  className="bg-red-500 text-white px-3 py-1 chamar-button" 
-                  onClick={(e) => onSelectChamarPorSenha(e,agendamento.senha)}>
-                  Chamar
+                <td className="p-3.5 border-b border-gray-200 text-center text-gray-800">{agendamento.tipoAtendimento}</td>
+                <td className="p-3.5 border-b border-gray-200 text-center text-gray-800">{formatDate(agendamento.horaAgendamento)}</td>
+                <td className="p-3.5 border-b border-gray-200 text-center">
+                  <button 
+                    className="bg-red-500 text-white px-3 py-1 rounded text-sm chamar-button hover:bg-red-600 transition-colors"
+                    onClick={(e) => onSelectChamarPorSenha(e, agendamento.senha)}
+                  >
+                    Chamar
                   </button>
-                  }
                 </td>
               </tr>
             ))

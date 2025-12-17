@@ -7,7 +7,6 @@ import SchedulingTable from "../components/SchedulingTable"
 import SchedulingModal from "../components/SchedulingModal"
 import DetailsModal from "../components/DetailsModal"
 import type { Agendamento } from "../types/agendamento"
-import "../styles/scheduling-dashboard.css"
 
 interface SchedulingDashboardProps {
   onNavigate: () => void
@@ -15,7 +14,7 @@ interface SchedulingDashboardProps {
   currentUser: string
 }
 
-const BASE_URL = "http://192.168.200.34:8080/agendamentos"
+const BASE_URL = "http://192.168.200.157:8080/agendamentos"
 
 export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardProps) {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([])
@@ -130,33 +129,30 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
     }
   }
 
-  
-
   const termo = searchTerm.trim().toLowerCase();
 
-const filteredAgendamentos =
-  termo === ""
-    ? agendamentos
-    : agendamentos.filter((agendamento) =>
-        agendamento.usuarioNome?.toLowerCase().includes(termo) ||
-        agendamento.senha?.toLowerCase().includes(termo) ||
-        agendamento.servicoNome?.toLowerCase().includes(termo)
-      );
-
+  const filteredAgendamentos =
+    termo === ""
+      ? agendamentos
+      : agendamentos.filter((agendamento) =>
+          agendamento.usuarioNome?.toLowerCase().includes(termo) ||
+          agendamento.senha?.toLowerCase().includes(termo) ||
+          agendamento.servicoNome?.toLowerCase().includes(termo)
+        );
 
   // console.log('Total de agendamentos antes do filtro:', filteredAgendamentos.length)
 
   return (
-    <div className="scheduling-dashboard">
-      <header className="dashboard-header">
-        <div className="header-content">
-          <h1>Painel de Agendamentos</h1>
-          <p>Centro Avançado de Apoio - São Luís</p>
-        </div>
-      </header>
+    <div className="flex flex-col h-screen bg-gray-50">
+      <header className="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 shadow-md">
+  <div className="header-content">
+    <h1 className="text-2xl font-semibold mb-1 -tracking-wide">Painel de Agendamentos</h1>
+    <p className="text-sm text-white/80">Centro Avançado de Apoio - São Luís</p>
+  </div>
+</header>
 
-      <main className="dashboard-main">
-        <div className="controls-section">
+      <main className="flex-1 overflow-auto p-6 lg:p-12 flex flex-col gap-6">
+        <div className="flex gap-4 items-center bg-white p-5 rounded-lg shadow-sm border border-gray-200 flex-wrap">
           <SearchBar value={searchTerm} onChange={setSearchTerm} />
           <ActionButtons
             selectedAgendamento={selectedAgendamento}
@@ -169,7 +165,7 @@ const filteredAgendamentos =
 
         <SchedulingTable
           setAgendamentos={setAgendamentos}
-          agendamentos={agendamentos}
+          agendamentos={filteredAgendamentos}
           selectedAgendamento={selectedAgendamento}
           onSelectAgendamento={setSelectedAgendamento}
           isLoading={isLoading}
@@ -178,8 +174,8 @@ const filteredAgendamentos =
 
       {selectedAgendamento && (
         <DetailsModal
-        agendamento={selectedAgendamento}
-        onClose={() => setSelectedAgendamento(null)}
+          agendamento={selectedAgendamento}
+          onClose={() => setSelectedAgendamento(null)}
         />
       )}
 

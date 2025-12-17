@@ -1,3 +1,11 @@
+
+// export type UserProfile = "ADMIN" | "CADASTRO" | "CONSULTA";
+
+export interface Usuario {
+  email: string;
+  senha: string;
+}
+
 export interface Agendamento {
   agendamentoId: number
   secretariaId?: number

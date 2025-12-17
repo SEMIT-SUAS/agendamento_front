@@ -1,31 +1,21 @@
 "use client"
 
-import { useState } from "react"
 import "./App.css"
 import SchedulingDashboard from "./pages/SchedulingDashboard"
 import DisplayPanel from "./pages/DisplayPanel"
 import LoginPage from "./pages/LoginPage"
+import { AuthProvider, useAuth } from "@/components/AuthContext"
+import { useState } from "react"
 
 type AppView = "dashboard" | "display"
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [currentUser, setCurrentUser] = useState<string>("")
+// Componente interno que usa o contexto
+function AppContent() {
+  const { isAuthenticated, user, logout } = useAuth()
   const [currentView, setCurrentView] = useState<AppView>("dashboard")
 
-  const handleLogin = (email: string) => {
-    setCurrentUser(email)
-    setIsAuthenticated(true)
-  }
-
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    setCurrentUser("")
-    setCurrentView("dashboard")
-  }
-
   if (!isAuthenticated) {
-    return <LoginPage onLogin={handleLogin} />
+    return <LoginPage />
   }
 
   return (
@@ -33,18 +23,27 @@ function App() {
       {currentView === "dashboard" && (
         <SchedulingDashboard
           onNavigate={() => setCurrentView("display")}
-          onLogout={handleLogout}
-          currentUser={currentUser}
+          onLogout={logout}
+          currentUser={user?.email || ""}
         />
       )}
       {currentView === "display" && (
         <DisplayPanel
           onNavigate={() => setCurrentView("dashboard")}
-          onLogout={handleLogout}
-          currentUser={currentUser}
+          onLogout={logout}
+          currentUser={user?.email || ""}
         />
       )}
     </div>
+  )
+}
+
+// Componente principal que fornece o contexto
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

@@ -3,36 +3,31 @@
 import { useAuth } from "@/components/AuthContext";
 import { useState, type FormEvent } from "react"
 
-interface LoginPageProps {
-  onLogin: (username: string) => void
-}
+// interface LoginPageProps {
+//   onLogin: (username: string) => void
+// }
 
-export default function LoginPage({ onLogin }: LoginPageProps) {
+export default function LoginPage() {
     const { user, login, isLoading } = useAuth();
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setIsSubmitting(true);
 
-    // Simula validação de login
-    setTimeout(() => {
-      if (email && password) {
-        if (password.length >= 6) {
-          onLogin(email)
-        } else {
-          setError("A senha deve ter pelo menos 6 caracteres")
+        console.log("Enviando login:", { email, password });
+        const success = await login(email, password);
+
+        if (!success) {
+        setError('Email ou senha inválidos. Tente novamente.');
         }
-      } else {
-        setError("Por favor, preencha todos os campos")
-      }
-      setIsLoading(false)
-    }, 800)
-  }
+
+        setIsSubmitting(false);
+    };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-gradient-to-br from-[#667eea] to-[#764ba2]">
@@ -145,7 +140,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       </div>
 
       {/* Responsive - hide circles on mobile */}
-      <style jsx>{`
+      <style>{`
         @media (max-width: 640px) {
           .absolute > div {
             display: none;
