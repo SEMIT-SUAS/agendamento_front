@@ -68,13 +68,13 @@ export default function SchedulingTable({
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="bg-blue-600 text-white">
-            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Senha</th>
-            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Usuário</th>
-            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Serviço</th>
-            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Situação</th>
-            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Tipo</th>
-            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Data/Hora</th>
-            <th className="p-3.5 text-center font-semibold tracking-wide sticky top-0">Ações</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide relative top-0">Senha</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide relative top-0">Usuário</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide relative top-0">Serviço</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide relative top-0">Situação</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide relative top-0">Tipo</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide relative top-0">Data/Hora</th>
+            <th className="p-3.5 text-center font-semibold tracking-wide relative top-0">Ações</th>
           </tr>
         </thead>
         <tbody>

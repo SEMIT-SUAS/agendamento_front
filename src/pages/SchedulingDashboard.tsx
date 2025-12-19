@@ -142,6 +142,12 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
           agendamento.servicoNome?.toLowerCase().includes(termo)
         );
 
+  const handleOpenDetails = (agendamento: Agendamento) => {
+    setSelectedAgendamento(agendamento)
+    setShowDetailsModal(true)
+  }
+
+
   // console.log('Total de agendamentos antes do filtro:', filteredAgendamentos.length)
 
   return (
@@ -169,22 +175,19 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
 
         <SchedulingTable
           setAgendamentos={setAgendamentos}
+          onSelectAgendamento={handleOpenDetails}
           agendamentos={filteredAgendamentos}
           selectedAgendamento={selectedAgendamento}
-          onSelectAgendamento={setSelectedAgendamento}
+          // onSelectAgendamento={setSelectedAgendamento}
           isLoading={isLoading}
         />
       </main>
 
-      {selectedAgendamento && (
+      {showDetailsModal && selectedAgendamento && (
         <DetailsModal
           agendamento={selectedAgendamento}
-          onClose={() => setSelectedAgendamento(null)}
+          onClose={() => setShowDetailsModal(false)}
         />
-      )}
-
-      {showDetailsModal && selectedAgendamento && (
-        <DetailsModal agendamento={selectedAgendamento} onClose={() => setShowDetailsModal(false)} />
       )}
     </div>
   )
