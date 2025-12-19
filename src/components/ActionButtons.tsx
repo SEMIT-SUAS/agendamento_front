@@ -1,22 +1,68 @@
 "use client"
 
+import { Dispatch, SetStateAction, useState } from "react"
 import type { Agendamento } from "../types/agendamento"
+import { useAuth } from "./AuthContext"
 
 interface ActionButtonsProps {
+  setAgendamentos: Dispatch<SetStateAction<Agendamento[]>>
+  setSelectedAgendamento: Dispatch<SetStateAction<Agendamento | null>>
   selectedAgendamento: Agendamento | null
-  onCallNormal: () => void
+  // onCallNormal: () => void
   onCallPriority: () => void
   onFinalize: () => void
   onCancel: () => void
 }
 
+const BASE_URL = "http://192.168.200.157:8080/agendamentos"
+
 export default function ActionButtons({
+  setSelectedAgendamento,
+  setAgendamentos,
   selectedAgendamento,
-  onCallNormal,
   onCallPriority,
   onFinalize,
   onCancel,
 }: ActionButtonsProps) {
+
+  const { user } = useAuth();
+  // const [agendamento, setAgendamento] =  useState<Agendamento | null>(null);
+
+  const onCallNormal = async () => {
+      try {
+          const secretariaId = user?.secretaria.id.toString();
+          const userId = user?.id.toString();
+          const response = await fetch(`${BASE_URL}/chamar/normal/${secretariaId}/${userId}`, { method: "POST" })
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          let data
+          try {
+            data = await response.json() 
+            console.log('Data Chamar Normal:', data); 
+          } catch {
+            data = null
+          }
+
+          // setAgendamento(data);
+          setSelectedAgendamento(data);
+          
+          setAgendamentos(prev =>
+            prev.map(p =>
+              p.agendamentoId === data?.id
+                ? { ...p, situacao: "EM_ATENDIMENTO" }
+                : p
+            )
+          );
+
+        } catch (error) {
+          console.error("Erro ao chamar normal:", error)
+          alert("Erro ao chamar agendamento")
+        }
+  }
+
   return (
     <div className="flex gap-3 items-center">
       {!selectedAgendamento ? (

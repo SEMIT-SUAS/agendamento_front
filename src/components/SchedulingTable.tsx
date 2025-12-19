@@ -31,7 +31,7 @@ export default function SchedulingTable({
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  console.log('👤 Usuario Login (AuthContext):', user);
+  // console.log('👤 Usuario Login (AuthContext):', user);
 
   const onSelectChamarPorSenha = async (e: React.MouseEvent<HTMLButtonElement>, senha: string) => {
     try {

@@ -159,7 +159,8 @@ export default function SchedulingDashboard({ onNavigate }: SchedulingDashboardP
           <SearchBar value={searchTerm} onChange={setSearchTerm} />
           <ActionButtons
             selectedAgendamento={selectedAgendamento}
-            onCallNormal={() => handleCall("normal")}
+            setAgendamentos={setAgendamentos}
+            setSelectedAgendamento={setSelectedAgendamento}
             onCallPriority={() => handleCall("prioridade")}
             onFinalize={() => console.log("Finalizar")}
             onCancel={() => handleCancelAppointment()}

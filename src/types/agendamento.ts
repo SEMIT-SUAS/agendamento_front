@@ -7,7 +7,7 @@ export interface Usuario {
   email: string;
   senha: string;
   guiche: number;
-  secretariaId: number;
+  secretaria: Secretaria;
   perfil: UserProfile;
 }
 
@@ -29,4 +29,10 @@ export interface Agendamento {
   tipoAtendimento: string
   horaAgendamento: string
   horaChamada?: string
+}
+
+export interface Secretaria {
+  id: number;
+  nome: string;
+  sigla: string;
 }
