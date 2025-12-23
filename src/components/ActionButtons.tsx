@@ -8,7 +8,7 @@ interface ActionButtonsProps {
   setAgendamentos: Dispatch<SetStateAction<Agendamento[]>>
   setSelectedAgendamento: Dispatch<SetStateAction<Agendamento | null>>
   selectedAgendamento: Agendamento | null
-  // onCallNormal: () => void
+  selectedByUser: boolean;
   onCallPriority: () => void
   onFinalize: () => void
   onCancel: () => void
@@ -25,6 +25,7 @@ export default function ActionButtons({
 
   const { user } = useAuth();
   // const [agendamento, setAgendamento] =  useState<Agendamento | null>(null);
+  const [selectedByUser, setSelectedByUser] = useState(false);
 
   const onCallNormal = async () => {
       try {
@@ -135,11 +136,13 @@ export default function ActionButtons({
   }
 }
 
-const showCallButtons =
-  !selectedAgendamento || selectedAgendamento.situacao === "AGENDADO";
+  const showCallButtons =
+  !selectedAgendamento ||
+  selectedAgendamento.situacao === "AGENDADO";
 
-const showActionButtons =
-  selectedAgendamento?.situacao === "EM_ATENDIMENTO";
+  const showActionButtons =
+    selectedByUser &&
+    selectedAgendamento?.situacao === "EM_ATENDIMENTO";
 
 
  return (

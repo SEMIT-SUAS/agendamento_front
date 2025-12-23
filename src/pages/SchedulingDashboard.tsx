@@ -30,7 +30,7 @@ export default function SchedulingDashboard({
   const { user, logout, clearCache } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
-
+  const [selectedByUser, setSelectedByUser] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -49,6 +49,7 @@ export default function SchedulingDashboard({
         );
         if (emAtendimento) {
           setSelectedAgendamento(emAtendimento);
+          setSelectedByUser(false);
         }
       } catch (error) {
         console.error("Erro ao carregar agendamentos:", error);
@@ -156,6 +157,7 @@ export default function SchedulingDashboard({
         );
 
   const handleOpenDetails = (agendamento: Agendamento) => {
+    setSelectedByUser(true); 
     setSelectedAgendamento(agendamento);
     setShowDetailsModal(true);
   };
@@ -193,8 +195,8 @@ useEffect(() => {
   const emAtendimento = agendamentos.filter(
     (a) => a.situacao === "EM_ATENDIMENTO"
   ).length;
-  const aguardando = agendamentos.filter(
-    (a) => a.situacao === "AGUARDANDO"
+  const finalizados = agendamentos.filter(
+    (a) => a.situacao === "FINALIZADO"
   ).length;
 
   return (
@@ -275,10 +277,10 @@ useEffect(() => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-amber-300 uppercase tracking-wide mb-2">
-                    Aguardando
+                    Finalizados
                   </p>
                   <p className="text-4xl sm:text-5xl font-black text-white">
-                    {aguardando}
+                    {finalizados}
                   </p>
                 </div>
                 <div className="bg-gradient-to-br from-amber-400/20 to-amber-600/20 p-4 rounded-2xl group-hover:from-amber-400/30 group-hover:to-amber-600/30 transition-all duration-300 shadow-lg">
@@ -295,6 +297,7 @@ useEffect(() => {
               </div>
               <div className="flex-shrink-0 w-full lg:w-auto">
                 <ActionButtons
+                  selectedByUser={selectedByUser}
                   selectedAgendamento={selectedAgendamento}
                   setAgendamentos={setAgendamentos}
                   setSelectedAgendamento={setSelectedAgendamento}
