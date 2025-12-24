@@ -36,24 +36,41 @@ export default function SchedulingTable({
 
   const { user } = useAuth();
   const [agendamento, setAgendamento] = useState<Agendamento | null>(null);
+  const [agendamentosDetalhe, setAgendamentosDetalhe] = useState<Agendamento[]>([])
 
   const onSelectChamarPorSenha = async (e: React.MouseEvent<HTMLButtonElement>, senha: string) => {
     try {
+// 🔹 Buscar detalhamento
+          const detalheResponse = await fetch(`${BASE_URL}/detalhamento`)
+          const data: Agendamento[] = await detalheResponse.json()
+
+          setAgendamentosDetalhe(data)
+
+          // ✅ FILTRA DIRETO NO DATA
+          const agendamentosEmAtendimento = data.filter(
+            a => a.situacao === "EM_ATENDIMENTO"
+          )
+
+          if (agendamentosEmAtendimento.length > 0) {
+            alert("Já existe um agendamento em atendimento. Finalize-o antes de chamar outro.")
+            return
+          }
+
       const response = await fetch(`${BASE_URL}/chamar/por-senha/${senha}/${user?.id}`, { method: "POST" })
       console.log('Agendamento ID para Chamar Normal:', senha);
 
-      let data
+      let chamada
       try {
-        data = await response.json()
+        chamada = await response.json()
       } catch {
-        data = null
+        chamada = null
       }
 
-      setAgendamento(data);
+      setAgendamento(chamada);
 
       setAgendamentos(prev =>
         prev.map(p =>
-          p.agendamentoId === data?.agendamentoId
+          p.agendamentoId === chamada?.agendamentoId
             ? { ...p, situacao: "EM_ATENDIMENTO" }
             : p
         )
