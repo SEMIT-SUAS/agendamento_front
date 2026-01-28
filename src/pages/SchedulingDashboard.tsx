@@ -1,384 +1,279 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SearchBar from "../components/SearchBar";
-import ActionButtons from "../components/ActionButtons";
-import SchedulingTable from "../components/SchedulingTable";
-import SchedulingModal from "../components/SchedulingModal";
-import DetailsModal from "../components/DetailsModal";
-import type { Agendamento } from "../types/agendamento";
+import { 
+  LayoutDashboard, Users, Clock, CheckCircle, Search, 
+  LogOut, Bell, Settings, FileText, UserCircle, ArrowRight, Volume2, Zap, ChevronLeft
+} from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
-import { LogOut, Calendar, Clock, Users } from "lucide-react";
 
-interface SchedulingDashboardProps {
-  onLogout: () => void;
-  currentUser: string;
-}
+// Componentes simulados (ajuste conforme seus arquivos reais)
+import SearchBar from "../components/SearchBar";
+import SchedulingTable from "../components/SchedulingTable";
 
-const BASE_URL = "http://192.168.200.157:8080/agendamentos";
-
-export default function SchedulingDashboard({
-}: SchedulingDashboardProps) {
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedAgendamento, setSelectedAgendamento] =
-    useState<Agendamento | null>(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { user, logout, clearCache } = useAuth();
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
-  const [selectedByUser, setSelectedByUser] = useState(false);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(`${BASE_URL}/secretaria/30`);
-        console.log("Retorno de SecretariaID:", response);
-        const data = await response.json();
-        const lista = Array.isArray(data)
-          ? data
-          : data.content || data.data || [];
-        setAgendamentos(lista);
-        // Auto-select em atendimento
-        // const emAtendimento = lista.find(
-        //   (e: Agendamento) => e.situacao === "EM_ATENDIMENTO"
-        // );
-        // if (emAtendimento) {
-        //   setSelectedAgendamento(emAtendimento);
-        //   setSelectedByUser(false);
-        // }
-      } catch (error) {
-        console.error("Erro ao carregar agendamentos:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadData();
-    // const interval = setInterval(loadData, 10000)
-    // return () => clearInterval(interval)
-  }, []);
-
-  const handleRowClick = (agendamento: Agendamento) => {
-    // Esta função será chamada apenas para seleção de linha,
-    // o botão já lidou com sua própria lógica e stopPropagation
-    setSelectedAgendamento(agendamento);
-  };
-
-  const handleCall = async (tipo: "normal" | "prioridade") => {
-    try {
-      const response = await fetch(`${BASE_URL}/chamar/${tipo}`, {
-        method: "POST",
-      });
-      const text = await response.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = null;
-      }
-      if (response.ok) {
-        if (data?.agendamento) {
-          setSelectedAgendamento(data.agendamento);
-        }
-        // Reload the list
-        const listResponse = await fetch(`${BASE_URL}/listar-todos`);
-        const listData = await listResponse.json();
-        const lista = Array.isArray(listData)
-          ? listData
-          : listData.content || [];
-        setAgendamentos(lista);
-      }
-    } catch (error) {
-      console.error("Erro ao chamar:", error);
-      alert("Erro ao chamar agendamento");
-    }
-  };
-
-  const handleCancelAppointment = async () => {
-    if (!selectedAgendamento?.agendamentoId) return;
-    if (!confirm(`Cancelar a senha ${selectedAgendamento.senha}?`)) return;
-    try {
-      const response = await fetch(
-        `${BASE_URL}/cancelar/${selectedAgendamento.agendamentoId}`,
-        {
-          method: "PUT",
-        }
-      );
-      if (response.ok) {
-        alert("Agendamento cancelado com sucesso!");
-        setSelectedAgendamento(null);
-        // Reload
-        const listResponse = await fetch(`${BASE_URL}/listar-todos`);
-        const listData = await listResponse.json();
-        const lista = Array.isArray(listData)
-          ? listData
-          : listData.content || [];
-        setAgendamentos(lista);
-      }
-    } catch (error) {
-      console.error("Erro ao cancelar:", error);
-      alert("Erro ao cancelar agendamento");
-    }
-  };
-
-  const handleShowDetails = async () => {
-    if (!selectedAgendamento?.agendamentoId) return;
-    try {
-      const response = await fetch(`${BASE_URL}/detalhes`);
-      const dados = await response.json();
-      const detalhe = dados.find(
-        (a: Agendamento) =>
-          Number(a.agendamentoId) ===
-          Number(selectedAgendamento.agendamentoId)
-      );
-      if (detalhe) {
-        setSelectedAgendamento(detalhe);
-        setShowDetailsModal(true);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar detalhes:", error);
-      alert("Erro ao buscar detalhes");
-    }
-  };
-
-  const termo = searchTerm.trim().toLowerCase();
-  const filteredAgendamentos =
-    termo === ""
-      ? agendamentos
-      : agendamentos.filter(
-          (agendamento) =>
-            agendamento.usuarioNome?.toLowerCase().includes(termo) ||
-            agendamento.senha?.toLowerCase().includes(termo) ||
-            agendamento.servicoNome?.toLowerCase().includes(termo)
-        );
-
-  const handleOpenDetails = (agendamento: Agendamento) => {
-    setSelectedByUser(true); 
-    setSelectedAgendamento(agendamento);
-    setShowDetailsModal(true);
-  };
-
-  const totalPages = Math.ceil(filteredAgendamentos.length / ITEMS_PER_PAGE);
-
-  const paginatedAgendamentos = filteredAgendamentos.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+export default function SchedulingDashboard() {
+  const { user, clearCache } = useAuth();
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [selectedAgendamento, setSelectedAgendamento] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const pessoasNaFila = agendamentos.filter(a => a.status === "AGUARDANDO");
+  const totalFila = pessoasNaFila.length;
+  const totalPrioridade = pessoasNaFila.filter(a => a.tipoAtendimento === "PRIORIDADE").length;
+  const totalNormal = totalFila - totalPrioridade;
+  const [filterStatus, setFilterStatus] = useState("AGUARDANDO");
+  const agendamentosFiltrados = agendamentos.filter(
+    (item) => item.status === filterStatus
   );
+  const { isAuthenticated, isLoading } = useAuth();
 
-  const getPageNumbers = () => {
-  const pages: number[] = [];
-  const maxVisible = 5;
-
-  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-  let end = Math.min(totalPages, start + maxVisible - 1);
-
-  if (end - start < maxVisible - 1) {
-    start = Math.max(1, end - maxVisible + 1);
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-
-  return pages;
-};
-
-useEffect(() => {
-  setCurrentPage(1);
-}, [searchTerm]);
-
-  const totalAgendamentos = agendamentos.length;
-  const emAtendimento = agendamentos.filter(
-    (a) => a.situacao === "EM_ATENDIMENTO"
-  ).length;
-  const finalizados = agendamentos.filter(
-    (a) => a.situacao === "FINALIZADO"
-  ).length;
-
+  // if (!isAuthenticated) {
+  //   window.location.href = "/login";
+  //   return null;
+  // }
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 text-white shadow-2xl border-b border-indigo-500/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-            {/* Logo and Title */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-2xl shadow-lg">
-                <Calendar className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-white to-indigo-100 bg-clip-text text-transparent">
-                  Painel de Agendamentos
-                </h1>
-                <p className="text-sm text-indigo-200 mt-1 font-medium">
-                  Centro Avançado de Apoio - São Luís
-                </p>
-              </div>
-            </div>
-
-            {/* Logout Button */}
-            <button
-              onClick={clearCache}
-              className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl transition-all duration-300 text-sm font-semibold border border-red-400/30 shadow-lg hover:shadow-xl hover:scale-105 w-full sm:w-auto"
-            >
-              <LogOut className="w-5 h-5" />
-              <span>Sair</span>
-            </button>
+    <div className="flex min-h-screen bg-[#F0F2F5]">
+      {/* SIDEBAR LATERAL */}
+      <aside 
+        className={`bg-white border-r border-slate-200 flex flex-col sticky top-0 h-screen transition-all duration-300 ease-in-out relative ${
+          isSidebarOpen ? "w-64" : "w-20"
+        }`}
+      >
+        <button 
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="absolute -right-3 top-10 bg-white border border-slate-200 rounded-full p-1 text-slate-500 hover:text-blue-600 shadow-sm z-50 transition-transform"
+          style={{ transform: isSidebarOpen ? "rotate(0deg)" : "rotate(180deg)" }}
+        >
+          <ChevronLeft size={16} />
+        </button>
+        {/* LOGO */}
+        <div className="p-4 flex items-center gap-2 border-b border-slate-50 overflow-hidden h-20">
+          <div className="min-w-[40px] h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shrink-0">
+            SA
           </div>
+          {isSidebarOpen && (
+            <span className="text-[15px] font-extrabold text-slate-800 leading-none">
+              Sistema de<br/>
+              <span className="text-blue-600 text-[15px] uppercase tracking-tighter">Agendamento</span>
+            </span>
+          )}
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto w-full">
-        <div className="space-y-8">
+        {/* MENU */}
+        <nav className="flex-1 p-4 space-y-2 overflow-hidden">
+          <NavItem 
+            icon={<LayoutDashboard size={20}/>} 
+            label={isSidebarOpen ? "Painel" : ""} 
+            active 
+            collapsed={!isSidebarOpen}
+          />
+          <NavItem 
+            icon={<Clock size={20}/>} 
+            label={isSidebarOpen ? "Fila de Espera" : ""} 
+            collapsed={!isSidebarOpen}
+          />
+        </nav>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Total Card */}
-            <div className="group bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-400/30 rounded-2xl p-6 hover:border-blue-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-blue-300 uppercase tracking-wide mb-2">
-                    Total de Agendamentos
-                  </p>
-                  <p className="text-4xl sm:text-5xl font-black text-white">
-                    {totalAgendamentos}
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-blue-400/20 to-blue-600/20 p-4 rounded-2xl group-hover:from-blue-400/30 group-hover:to-blue-600/30 transition-all duration-300 shadow-lg">
-                  <Calendar className="w-8 h-8 text-blue-300" />
-                </div>
-              </div>
-            </div>
 
-            {/* Em Atendimento Card */}
-            <div className="group bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-400/30 rounded-2xl p-6 hover:border-emerald-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-emerald-300 uppercase tracking-wide mb-2">
-                    Em Atendimento
-                  </p>
-                  <p className="text-4xl sm:text-5xl font-black text-white">
-                    {emAtendimento}
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-emerald-400/20 to-emerald-600/20 p-4 rounded-2xl group-hover:from-emerald-400/30 group-hover:to-emerald-600/30 transition-all duration-300 shadow-lg">
-                  <Clock className="w-8 h-8 text-emerald-300" />
-                </div>
-              </div>
+        {/* PERFIL E SAIR */}
+        <div className="p-4 border-t border-slate-100 overflow-hidden">
+          <div className={`flex items-center gap-3 transition-all ${
+            isSidebarOpen ? "p-3 rounded-2xl" : "justify-center p-0 mb-4"
+          }`}>
+            <div className="min-w-[32px] h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm">
+              MS
             </div>
-
-            {/* Aguardando Card */}
-            <div className="group bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-400/30 rounded-2xl p-6 hover:border-amber-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 sm:col-span-2 lg:col-span-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-amber-300 uppercase tracking-wide mb-2">
-                    Finalizados
-                  </p>
-                  <p className="text-4xl sm:text-5xl font-black text-white">
-                    {finalizados}
-                  </p>
-                </div>
-                <div className="bg-gradient-to-br from-amber-400/20 to-amber-600/20 p-4 rounded-2xl group-hover:from-amber-400/30 group-hover:to-amber-600/30 transition-all duration-300 shadow-lg">
-                  <Users className="w-8 h-8 text-amber-300" />
-                </div>
+            {isSidebarOpen && (
+              <div className="flex-1 overflow-hidden animate-in fade-in duration-300">
+                <p className="text-sm font-bold text-slate-800 truncate">Maria Silva</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider">Atendente</p>
               </div>
-            </div>
-          </div>
-          {/* Search and Actions Bar */}
-          <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/60 border border-indigo-500/20 rounded-2xl p-6 sm:p-8 backdrop-blur-sm hover:border-indigo-400/40 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-indigo-500/10">
-            <div className="flex flex-col lg:flex-row gap-6 items-stretch lg:items-center">
-              <div className="flex-1 w-full min-w-0">
-                <SearchBar value={searchTerm} onChange={setSearchTerm} />
-              </div>
-              <div className="flex-shrink-0 w-full lg:w-auto">
-                <ActionButtons
-                  selectedByUser={selectedByUser}
-                  selectedAgendamento={selectedAgendamento}
-                  setAgendamentos={setAgendamentos}
-                  setSelectedAgendamento={setSelectedAgendamento}
-                  onCallPriority={() => handleCall("prioridade")}
-                  onFinalize={() => console.log("Finalizar")}
-                  onCancel={() => handleCancelAppointment()}
-                />
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Table Card */}
-          <div
-            className="
-              bg-gradient-to-br from-slate-800/80 to-slate-900/60
-              border border-indigo-500/20 rounded-2xl shadow-xl
-              backdrop-blur-sm hover:border-indigo-400/40
-              overflow-hidden
-            "
+          <button 
+            onClick={clearCache} 
+            className={`flex items-center gap-2 text-xs font-bold text-red-600 hover:text-red-700 hover:bg-red-50 transition-all rounded-xl ${
+              isSidebarOpen ? "p-3 w-full" : "p-3 justify-center w-full"
+            }`}
+            title={!isSidebarOpen ? "Sair do Sistema" : ""}
           >
-            {/* Área rolável */}
-            <div>
-              <SchedulingTable
-                setAgendamentos={setAgendamentos}
-                onSelectAgendamento={handleOpenDetails}
-                selectedAgendamento={selectedAgendamento}
-                isLoading={isLoading}
-                agendamentos={paginatedAgendamentos}
+            <LogOut size={16} className="shrink-0" />
+            {isSidebarOpen && <span className="animate-in fade-in duration-300">Sair do Sistema</span>}
+          </button>
+        </div>
+      </aside>
+
+      {/* CONTEÚDO PRINCIPAL */}
+      <main className="flex-1 min-w-0 flex flex-col transition-all duration-300">
+        {/* Top Header */}
+        <header className="w-full  py-2 border-b border-slate-200 flex items-center justify-between px-8">
+          <div className="flex items-center gap-2 text-sm text-slate-400 font-medium">
+            <span>Gestão</span>
+            <span>/</span>
+            <span className="text-slate-800 font-bold">Monitor Operacional</span>
+          </div>
+          <div className="flex-1 max-w-md mx-8">
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200">
+                <Search size={18} strokeWidth={2.5} />
+              </div>
+              <input
+                type="text"
+                placeholder="Localizar senha ou cidadão..."
+                className="
+                  w-full h-11 pl-12 pr-4
+                  bg-gray-50 border border-slate-300
+                  rounded-3xl text-sm font-medium text-slate-700
+                  placeholder:text-slate-400
+                  outline-none transition-all duration-200
+                  focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10
+                "
               />
             </div>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              <span className="text-[18px] font-bold text-slate-400 uppercase">Guichê: <span className="text-blue-500 ">04</span></span>
+            </div>
+            <div className=" text-[18px] px-4 py-1.5 rounded-lg text-blue-600 font-bold text-sm">
+              12:43
+            </div>
+          </div>
+        </header>
 
-            {/* Paginação */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-indigo-500/20">
-              <span className="text-sm text-indigo-200">
-                Página {currentPage} de {totalPages}
-              </span>
-
-              <div className="flex items-center gap-1">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(p => p - 1)}
-                  className="px-3 py-1.5 rounded-md bg-slate-700/60 text-white text-sm
-                    disabled:opacity-40 hover:bg-slate-600 transition"
-                >
-                  ‹
+        
+        <div className="p-8 space-y-8 w-full">
+          {/* INDICADORES MENORES */}
+          <div className="grid  grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <StatCard label="Atendimentos Hoje" value="42" icon={<UserCircle className="text-slate-400"/>} highlight="black"/>
+           <StatCard 
+                label="Pessoas na Fila" 
+                value="18" 
+                prioridades="4" 
+                normais="12" 
+                icon={<Clock className="text-orange-400"/>} 
+                highlight="orange" 
+              />
+            <StatCard label="Em Guichê" value="5" icon={<Volume2 className="text-blue-400"/>} highlight="blue" />
+            <StatCard label="Finalizados" value="19" icon={<CheckCircle className="text-emerald-400"/>} highlight="green"/>
+          </div>
+          {/* PAINEL DE COMANDOS (BOTÕES DE CHAMADA) */}
+          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm space-y-6">
+             <h2 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Painel de Comandos</h2>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl p-6 flex items-center justify-between transition-all group shadow-lg shadow-blue-100">
+                  <div className="text-left">
+                    <p className="text-[10px] font-bold opacity-80 uppercase">Fila Normal</p>
+                    <p className="text-lg font-bold">Chamar Próximo</p>
+                  </div>
+                  <div className="bg-white/20 p-3 rounded-xl group-hover:scale-110 transition-transform">
+                    <Volume2 />
+                  </div>
                 </button>
 
-                {getPageNumbers().map(page => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1.5 rounded-md text-sm transition
-                      ${
-                        page === currentPage
-                          ? "bg-indigo-600 text-white"
-                          : "bg-slate-700/40 text-indigo-200 hover:bg-slate-600"
-                      }`}
-                  >
-                    {page}
-                  </button>
-                ))}
+                <button className="bg-amber-400 hover:bg-amber-500 text-white rounded-2xl p-6 flex items-center justify-between transition-all group shadow-lg shadow-orange-100">
+                  <div className="text-left">
+                    <p className="text-[10px] font-bold opacity-80 uppercase">Prioritário</p>
+                    <p className="text-lg font-bold">Chamar Prioridade</p>
+                  </div>
+                  <div className="bg-white/20 p-3 rounded-xl group-hover:scale-110 transition-transform">
+                    <Zap />
+                  </div>
+                </button>
+
+             </div>
+          </div>
+          {/* TABELA DE ATENDIMENTO */}
+          <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+              <div className="flex bg-slate-100 p-1 rounded-xl">
+                <button
+                  onClick={() => setFilterStatus("AGUARDANDO")}
+                  className={`px-6 py-2 text-xs font-bold rounded-lg transition-all ${
+                    filterStatus === "AGUARDANDO"
+                      ? "bg-white text-blue-600 shadow-sm"
+                      : "text-slate-400 hover:text-slate-600"
+                  }`}
+                >
+                  Aguardando
+                </button>
 
                 <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(p => p + 1)}
-                  className="px-3 py-1.5 rounded-md bg-slate-700/60 text-white text-sm
-                    disabled:opacity-40 hover:bg-slate-600 transition"
+                  onClick={() => setFilterStatus("EM_ATENDIMENTO")}
+                  className={`px-6 py-2 text-xs font-bold rounded-lg transition-all ${
+                    filterStatus === "EM_ATENDIMENTO"
+                      ? "bg-white text-blue-600 shadow-sm"
+                      : "text-slate-400 hover:text-slate-600"
+                  }`}
                 >
-                  ›
+                  Em Atendimento
                 </button>
               </div>
+                            
             </div>
+            
+            <SchedulingTable agendamentos={agendamentosFiltrados} />
           </div>
         </div>
       </main>
+    </div>
+  );
+}
 
-      {/* Details Modal */}
-      {showDetailsModal && selectedAgendamento && (
-        <DetailsModal
-          agendamento={selectedAgendamento}
-          onClose={() => setShowDetailsModal(false)}
-        />
-      )}
+/* COMPONENTES DE APOIO INTERNOS */
+function NavItem({ icon, label, active = false, collapsed = false }) {
+  return (
+    <button className={`flex items-center w-full rounded-xl font-bold text-sm transition-all h-11 ${
+      collapsed ? "justify-center px-0" : "gap-4 px-4"
+    } ${
+      active ? "bg-blue-600 text-white shadow-lg shadow-blue-100" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+    }`}>
+      <div className="shrink-0">{icon}</div>
+      {!collapsed && <span className="whitespace-nowrap overflow-hidden">{label}</span>}
+    </button>
+  );
+}
+function StatCard({ label, value, icon, highlight, prioridades, normais }) {
+  const colors = {
+    black: 'bg-slate-900',
+    orange: 'bg-amber-400',
+    blue: 'bg-blue-600',
+    green: 'bg-emerald-500'
+  };
+
+  return (
+    <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+      <div className="flex-1">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+        <p className="text-3xl font-black text-slate-800">{value}</p>
+        
+        {/* INDICADORES DE PRIORIDADE E NORMAL */}
+        {(prioridades || normais) && (
+          <div className="flex gap-3 mt-3">
+            <span className="text-[16px] font-semibold text-blue-600">
+              {normais} Normal
+            </span>
+            <span className="text-[16px] font-semibold text-amber-600">
+              {prioridades} Prioridade
+            </span>
+          </div>
+        )}
+
+        {highlight && (
+          <div className={`h-1 w-10 mt-3 rounded-full ${colors[highlight]}`}></div>
+        )}
+      </div>
+      <div className="bg-slate-50 p-4 rounded-2xl shrink-0">{icon}</div>
     </div>
   );
 }

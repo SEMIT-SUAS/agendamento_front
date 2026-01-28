@@ -2,15 +2,19 @@
 
 import { useAuth } from "@/components/AuthContext";
 import { useState, type FormEvent } from "react"
+import { useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom"
 
 // interface LoginPageProps {
 //   onLogin: (username: string) => void
 // }
 
 export default function LoginPage() {
-    const { user, login, isLoading } = useAuth();
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const navigate = useNavigate();
+
+    // const { user, login, isLoading } = useAuth();
+  const [login, setEmail] = useState("")
+  const [senha, setPassword] = useState("")
   const [error, setError] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,14 +23,42 @@ export default function LoginPage() {
         setError('');
         setIsSubmitting(true);
 
-        console.log("Enviando login:", { email, password });
-        const success = await login(email, password);
+        // console.log("Enviando login:", { email, password });
+        // const success = await login(email, password);
 
-        if (!success) {
-        setError('Email ou senha inválidos. Tente novamente.');
+        // if (!success) {
+        // setError('Email ou senha inválidos. Tente novamente.');
+        // }
+
+        // setIsSubmitting(false);
+
+        try {
+          const response = await fetch('http://localhost:8080/gerenciador/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              login,
+              senha,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Login inválido');
+          }
+
+          const data = await response.json();
+          console.log('Login sucesso:', data);
+
+          if(data.perfil === "ADMIN") navigate("/")
+          // aqui você pode salvar token, redirecionar, etc.
+
+        } catch (err) {
+          setError('Email ou senha inválidos. Tente novamente.');
+        } finally {
+          setIsSubmitting(false);
         }
-
-        setIsSubmitting(false);
     };
 
   return (
@@ -65,7 +97,7 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
-                value={email}
+                value={login}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
@@ -81,7 +113,7 @@ export default function LoginPage() {
               <input
                 id="password"
                 type="password"
-                value={password}
+                value={senha}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
@@ -107,17 +139,17 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              // disabled={isLoading}
               className="w-full py-3.5 px-6 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none transition-all duration-200 flex items-center justify-center gap-3"
             >
-              {isLoading ? (
+              {/* {isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   <span>Entrando...</span>
                 </>
               ) : (
                 "Entrar"
-              )}
+              )} */}
             </button>
 
             <div className="text-center pt-2">

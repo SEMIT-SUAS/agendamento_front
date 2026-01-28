@@ -30,8 +30,11 @@ function AppRoutes() {
         }
       />
 
+      <Route path="/" element={<SchedulingDashboard />} />
+
+
       {/* Dashboard protegido */}
-      <Route
+      {/* <Route
         path="/"
         element={
           <PrivateRoute>
@@ -41,7 +44,9 @@ function AppRoutes() {
             />
           </PrivateRoute>
         }
-      />
+      /> */}
+
+      
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" />} />
