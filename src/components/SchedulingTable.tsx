@@ -3,8 +3,8 @@ import { formatDate, formatSituation } from "../utils/formatters"
 import { Dispatch, SetStateAction, useState } from "react"
 import { useAuth } from "./AuthContext"
 import { Phone, AlertCircle, Clock, Zap, CheckCircle, XCircle, Users, Calendar } from "lucide-react"
+import { ENDPOINTS } from "@/lib/api";
 
-const BASE_URL = "http://192.168.200.157:8080/agendamentos"
 
 interface SchedulingTableProps {
   setAgendamentos: Dispatch<SetStateAction<Agendamento[]>>;
@@ -41,7 +41,7 @@ export default function SchedulingTable({
   const onSelectChamarPorSenha = async (e: React.MouseEvent<HTMLButtonElement>, senha: string) => {
     try {
 // 🔹 Buscar detalhamento
-          const detalheResponse = await fetch(`${BASE_URL}/detalhamento`)
+          const detalheResponse = await fetch(ENDPOINTS.DETALHAMENTO);
           const data: Agendamento[] = await detalheResponse.json()
 
           setAgendamentosDetalhe(data)

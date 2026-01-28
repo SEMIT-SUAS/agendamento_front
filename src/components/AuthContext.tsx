@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Usuario, UsuarioLogin } from '@/types/agendamento';
+
 // import { authAPI, usuariosAPI } from '@/lib/api';
 
 export type UserProfile = 'ADMIN' | 'CADASTRO' | 'CONSULTA';
 
-const BASE_URL = 'http://192.168.200.157:8080/';
+const BASE_URL = 'http://192.168.200.180:8080/';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -94,6 +95,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (login: string, senha: string): Promise<boolean> => {
     try {
       setIsLoading(true);
+      setError(''); // Limpa erros anteriores
+
       const response = await fetch(`${BASE_URL}gerenciador/login`, {
         method: 'POST',
         headers: {
@@ -103,52 +106,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (!response.ok) {
-        console.log('Usuário não encontrado');
-        return false;
-    }   
+        throw new Error('Login inválido');
+      }
 
       const data = await response.json();
-      console.log('Login response status 1: ', data);
+      console.log('Login sucesso:', data);
 
+      // 1. Calcular expiração (24h)
       const expiration = new Date().getTime() + SESSION_DURATION_MS;
 
-       // 🔐 Salva token
-        setToken(data.token);
-        localStorage.setItem('agendamento_token', data.token);
-        localStorage.setItem('agendamento_token_expiration', expiration.toString());
+      // 2. Salvar Token e dados básicos
+      setToken(data.token);
+      localStorage.setItem('agendamento_token', data.token);
+      localStorage.setItem('agendamento_token_expiration', expiration.toString());
 
-        // 👤 Busca usuário logado enviando o token
-        const resposta = await fetch(`${BASE_URL}gerenciador/usuario-logado`, {
+      // 3. Buscar os dados completos do usuário usando o token recebido
+      const userResponse = await fetch(`${BASE_URL}gerenciador/usuario-logado`, {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${data.token}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${data.token}`,
         },
-        });
+      });
 
-        if (!resposta.ok) {
-        throw new Error('Erro ao buscar usuário logado');
-        }
-
-        const user: Usuario = await resposta.json();
-
-        setUser(user);
-        localStorage.setItem('agendamento_user', JSON.stringify(user));
-
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        setUser(userData);
+        localStorage.setItem('agendamento_user', JSON.stringify(userData));
         setIsAuthenticated(true);
-
-        console.log('Resposta do setIsAuthenticated:', isAuthenticated);
-
-        console.log(`✅ Sessão iniciada — expira em ${new Date(expiration).toLocaleTimeString()}`);
-
         return true;
-    } catch (error) {
-      console.error('Login error:', error);
+      }
+
+      return false;
+    } catch (err) {
+      console.error('Erro no processo de login:', err);
       return false;
     } finally {
       setIsLoading(false);
     }
-  };
+};
 
   
 

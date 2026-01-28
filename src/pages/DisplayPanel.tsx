@@ -9,7 +9,7 @@ interface DisplayPanelProps {
   currentUser: string
 }
 
-const BASE_URL = "http://192.168.200.157:8080/agendamentos"
+const BASE_URL = "http://192.168.200.180:8080/agendamentos"
 
 export default function DisplayPanel({ onNavigate, onLogout, currentUser }: DisplayPanelProps) {
   const [ultimaChamada, setUltimaChamada] = useState<Agendamento | null>(null)

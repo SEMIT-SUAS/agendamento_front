@@ -62,7 +62,8 @@ export default function LoginPage() {
     };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-gradient-to-br from-[#667eea] to-[#764ba2]">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50 relative overflow-hidden">
+      
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute w-[400px] h-[400px] -top-48 -right-24 rounded-full bg-white/10 backdrop-blur-sm"></div>
@@ -70,28 +71,38 @@ export default function LoginPage() {
         <div className="absolute w-[200px] h-[200px] top-1/2 left-1/4 -translate-y-1/2 rounded-full bg-white/10 backdrop-blur-sm"></div>
       </div>
 
-      <div className="w-full max-w-[420px] animate-slide-up">
-        <div className="bg-white rounded-2xl shadow-2xl p-12 relative z-10">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#667eea] to-[#764ba2] rounded-2xl text-white mb-6">
-              <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="40" height="40" rx="8" fill="currentColor" />
-                <path d="M20 10L28 16V24L20 30L12 24V16L20 10Z" fill="white" />
-              </svg>
+     <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-green-400 to-blue-600"></div>
+
+      {/* Marca d'água sutil ou formas geométricas que lembram azulejos */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+        <div className="absolute top-10 right-10 w-64 h-64 border-8 border-blue-600 rounded-full"></div>
+        <div className="absolute bottom-10 left-10 w-96 h-96 border-8 border-blue-600 rounded-full"></div>
+      </div>
+
+      <div className="w-full max-w-[440px] relative z-10">
+        <div className="bg-white rounded-[2rem] shadow-2xl shadow-blue-900/10 p-10 border border-slate-100">
+          
+          {/* Cabeçalho Institucional */}
+          <div className="text-center mb-10">
+            {/* Logo da Prefeitura */}
+            <div className="flex justify-center">
+               <img src="/logo-prefeitura.png" alt="Prefeitura de São Luís" className="h-30 w-auto object-contain" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Sistema de Agendamentos
+            
+            <div className="h-1 w-12 bg-blue-600 mx-auto mb-5"></div>
+            
+            <h1 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+              Acesso ao <span className="text-blue-600">Sistema</span>
             </h1>
-            <p className="text-gray-600">
-              Entre com suas credenciais para acessar o sistema
+            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2">
+              ffffffffffsdfdfsdf
             </p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-800">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
                 E-mail
               </label>
               <input
@@ -107,7 +118,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-800">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
                 Senha
               </label>
               <input
@@ -139,33 +150,19 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              // disabled={isLoading}
-              className="w-full py-3.5 px-6 bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none transition-all duration-200 flex items-center justify-center gap-3"
-            >
-              {/* {isLoading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Entrando...</span>
-                </>
-              ) : (
-                "Entrar"
-              )} */}
+              //disabled={isLoading}
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-2"
+            > Entrar
+              {/*isLoading ? "Autenticando..." : "Entrar no Sistema"*/}
             </button>
-
-            <div className="text-center pt-2">
-              <a
-                href="#"
-                className="text-sm font-medium text-[#667eea] hover:text-[#764ba2] hover:underline transition-colors"
-              >
-                Esqueceu sua senha?
-              </a>
-            </div>
           </form>
 
+
           {/* Demo info */}
-          <div className="mt-8 pt-8 border-t border-gray-200">
-            <p className="text-center text-sm text-gray-500">
-              Demo: Use qualquer e-mail e senha com 6+ caracteres
+          <div className="mt-8 text-center border-t border-slate-50 pt-8">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+              © 2026 Prefeitura de São Luís <br/> 
+              <span className="text-blue-500">Secretaria Municipal de Tecnologia da Informação</span>
             </p>
           </div>
         </div>

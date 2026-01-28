@@ -14,7 +14,7 @@ interface ActionButtonsProps {
   onCancel: () => void
 }
 
-const BASE_URL = "http://192.168.200.157:8080/agendamentos"
+const BASE_URL = "http://192.168.200.180:8080/agendamentos"
 
 export default function ActionButtons({
   setSelectedAgendamento,
@@ -35,7 +35,7 @@ export default function ActionButtons({
 
           setAgendamentosDetalhe(data)
 
-          // ✅ FILTRA DIRETO NO DATA
+          // 
           const agendamentosEmAtendimento = data.filter(
             a => a.situacao === "EM_ATENDIMENTO"
           )
