@@ -19,7 +19,7 @@ interface Call {
 const SENHAS = ["A", "B", "C", "D"];
 const GUICHES = ["01", "02", "03", "04", "05"]
 
-const BASE_URL = "http://192.168.200.18:8080";
+const BASE_URL = "http://192.168.100.21:8080";
 
 export default function CallBoardPage() {
     const [ultimaChamada, setUltimaChamada] = useState<UltimaChamada | null>(null)

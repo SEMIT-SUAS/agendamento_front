@@ -3,7 +3,7 @@ import { formatDate, formatSituation } from "../utils/formatters"
 import { Dispatch, SetStateAction, useState } from "react"
 import { useAuth } from "./AuthContext"
 import { Phone, AlertCircle, Clock, Zap, CheckCircle, XCircle, Users, Calendar } from "lucide-react"
-import { ENDPOINTS } from "@/lib/api";
+import { BASE_URL, ENDPOINTS } from "@/lib/api";
 
 
 interface SchedulingTableProps {
